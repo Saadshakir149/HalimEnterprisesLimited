@@ -1,6 +1,13 @@
 @import "tailwindcss";
 
 /*
+ * "short:" — desktop-width screens that are not very tall: most laptops, and any
+ * browser zoomed to 125–150%. Used to keep the homepage hero's headline, text and
+ * buttons within the first screen.
+ */
+@custom-variant short (@media (min-width: 64rem) and (max-height: 50rem));
+
+/*
  * Halim Enterprises Limited design tokens. Every token is defined here, once, and used
  * through Tailwind utilities (bg-navy, text-h2, py-section, max-w-site, ...).
  * Tailwind's default colour, font, type, radius and shadow scales are cleared
@@ -177,8 +184,8 @@
       linear-gradient(
         to right,
         color-mix(in srgb, var(--scrim) 94%, transparent) 0%,
-        color-mix(in srgb, var(--scrim) 90%, transparent) 45%,
-        color-mix(in srgb, var(--scrim) 80%, transparent) 62%,
+        color-mix(in srgb, var(--scrim) 90%, transparent) 50%,
+        color-mix(in srgb, var(--scrim) 84%, transparent) 62%,
         color-mix(in srgb, var(--scrim) 72%, transparent) 80%,
         color-mix(in srgb, var(--scrim) 66%, transparent) 100%
       );

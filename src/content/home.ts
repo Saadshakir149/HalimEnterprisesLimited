@@ -17,8 +17,8 @@ const brand = site.brandName;
 const incorporatedMonth = new Date(site.incorporated).toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
 
 export const hero = {
-  /** Small line above the headline */
-  eyebrow: "Accountancy services · Remote across the UK",
+  /** Small line above the headline; on phones only the first part shows, to keep the hero uncluttered */
+  eyebrow: { main: "Accountancy services", extra: "Remote across the UK" },
   /**
    * The h1 reads as one sentence; the accent part is set on its own line in light teal.
    * Alternatives for the client: "Bookkeeping and VAT returns for small businesses and individuals",

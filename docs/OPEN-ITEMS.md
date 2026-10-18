@@ -22,6 +22,19 @@ Mirrors CLAUDE.md section 11; keep the two in step. Values marked `PLACEHOLDER_`
 | Client's existing policies | Not received | Legal pages are stubs |
 | Budget and launch date | Missing | — |
 
+## Website revision (18 October 2026)
+
+Brand changed to Halim Enterprises Limited and all copy rewritten (details in `docs/CONTENT-SEO-AUDIT.md`). Questions for the client:
+
+- [ ] **Limited companies as an audience.** The brief's five audiences don't include limited companies, but annual/statutory accounts and company formation (both selected) serve them, and the payroll page addresses company directors. Should "Limited companies" become a sixth audience page, or stay covered within the services only?
+- [ ] **Domain for the new name.** `halimaccountants.co.uk` was chosen for the old trading name and hasn't been bought. Which domain should the site use? Once live, set `NEXT_PUBLIC_SITE_URL` and rebuild: that switches on canonical links, the sitemap, `og:url` and the website address in emails.
+- [ ] **Reply-time commitment.** No response time is shown anywhere now. If the client wants one (for example "within one working day"), set `site.responseTime` and it reappears on the contact page, in form confirmations and in the acknowledgement email.
+- [ ] **"Clients deal directly with the director" / "one point of contact"** (homepage, about page). Confirm this is how the company will work.
+- [ ] **New headline:** "Bookkeeping, VAT and accounting for UK small businesses". Alternatives are in `src/content/home.ts`.
+- [ ] **Email to the visitor** now says "we will reply to you by email". Confirm email is the channel the client will reply through.
+- [ ] **Legal pages** still say only "This website is run by Halim Enterprises Limited" (the "trading as Halim Accountants" wording is removed). Their substance is unchanged and still a draft for professional review.
+- [ ] **No social-sharing image** exists yet. Pages share a title and description only. A branded image (1200 × 630) can be added once there is a logo.
+
 ## Software strip marquee (iteration 14)
 
 - [ ] **Updated trademark line** (draft): adds "FreeAgent, Dext and Hubdoc are trademarks of their respective owners."

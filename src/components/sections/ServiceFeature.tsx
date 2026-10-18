@@ -46,9 +46,11 @@ export function ServiceFeature({ service, large }: { service: ConfirmedService; 
           {service.title}
         </Heading>
       </div>
-      <p className={cn("max-w-[18ch] font-serif text-balance", large ? "text-h1 text-on-navy" : "text-h2 text-navy")}>{copy.headline}</p>
-      <p className={cn("max-w-measure", large ? "text-lead text-on-navy-muted" : "text-body text-ink")}>{copy.text}</p>
-      <ul className="flex flex-col gap-3">
+      {/* One size smaller on phones, where the full size made four-line headlines */}
+      <p className={cn("max-w-[18ch] font-serif text-balance", large ? "text-h2 text-on-navy sm:text-h1" : "text-h3 text-navy sm:text-h2")}>{copy.headline}</p>
+      <p className={cn("max-w-measure", large ? "text-body text-on-navy-muted sm:text-lead" : "text-body text-ink")}>{copy.text}</p>
+      {/* The checklist repeats the paragraph above; on phones it is left out to keep the card short */}
+      <ul className="flex flex-col gap-3 max-sm:hidden">
         {copy.points.map((point) => (
           <li key={point} className="flex items-start gap-3 text-body">
             <span

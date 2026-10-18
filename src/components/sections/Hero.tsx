@@ -44,24 +44,35 @@ export function Hero() {
         <div aria-hidden="true" className="absolute inset-0 hero-scrim" />
       </div>
 
-      <Container className="flex items-center py-16 sm:py-20 lg:min-h-[clamp(36rem,calc(100svh-5rem),43rem)] lg:py-20">
+      {/*
+        Sizing: the hero follows the screen. From 1024px it fills the space under the header (between
+        28rem and 43rem). On short desktop screens (laptops, zoomed browsers: the "short" variant) the
+        headline also scales with the screen height and the spacing tightens, so the headline, text and
+        both buttons sit in the first view. On phones the eyebrow shortens and the text steps down a size.
+      */}
+      <Container className="flex items-center py-12 sm:py-20 lg:min-h-[clamp(28rem,calc(100svh-5rem),43rem)] lg:py-20 short:py-10">
         {/* CSS entrance (animate-enter): runs from first paint, needs no JavaScript, done by about 450ms */}
         <div className="flex max-w-[40rem] flex-col xl:max-w-[44rem]">
-          {/* Muted rather than teal, so the light-teal accent is kept for the headline's second sentence */}
-          <Eyebrow className="animate-enter in-data-[tone=navy]:text-on-navy-muted">{hero.eyebrow}</Eyebrow>
+          {/* Muted rather than teal, so the light-teal accent is kept for the headline's second line */}
+          <Eyebrow className="animate-enter in-data-[tone=navy]:text-on-navy-muted">
+            {hero.eyebrow.main}
+            <span className="max-sm:hidden"> · {hero.eyebrow.extra}</span>
+          </Eyebrow>
           <Heading
             level={1}
             id="hero-title"
-            className="mt-5 animate-enter text-[clamp(2.25rem,1.5rem+2.8vw,3.5rem)] leading-[1.06] font-semibold tracking-[-0.02em] [animation-delay:40ms]"
+            className="mt-4 animate-enter text-[clamp(2rem,1.4rem+2.8vw,3.5rem)] leading-[1.06] font-semibold tracking-[-0.02em] [animation-delay:40ms] sm:mt-5 short:mt-3 short:text-[clamp(2rem,1rem+5.6svh,3rem)]"
           >
             {/* One sentence for search engines and screen readers; the accent sits on its own line */}
             <span className="block text-balance">{main}</span> <span className="block text-balance text-teal-on-dark">{accent}</span>
           </Heading>
-          <p className="mt-6 max-w-[33rem] animate-enter text-lead text-pretty text-on-navy [animation-delay:90ms]">{hero.lead}</p>
+          <p className="mt-5 max-w-[33rem] animate-enter text-body text-pretty text-on-navy [animation-delay:90ms] sm:mt-6 sm:text-lead xl:max-w-[38rem] short:mt-4">
+            {hero.lead}
+          </p>
           {/* Below 1024px the floating WhatsApp button would cover these full-width buttons, so it steps aside while they are on screen */}
           <div
             data-hide-whatsapp="below-lg"
-            className="mt-9 flex animate-enter flex-col gap-3 [animation-delay:140ms] sm:flex-row sm:flex-wrap sm:gap-4"
+            className="mt-7 flex animate-enter flex-col gap-3 [animation-delay:140ms] sm:mt-9 sm:flex-row sm:flex-wrap sm:gap-4 short:mt-6"
           >
             <Button href={routes.consultation} variant="on-dark" size="lg">
               {hero.primaryCta}
@@ -71,7 +82,7 @@ export function Hero() {
               {hero.secondaryCta}
             </Button>
           </div>
-          <ul className="mt-6 flex animate-enter flex-col gap-2 text-small text-on-navy [animation-delay:190ms] sm:flex-row sm:flex-wrap sm:gap-x-8">
+          <ul className="mt-5 flex animate-enter flex-col gap-2 text-small text-on-navy [animation-delay:190ms] sm:mt-6 sm:flex-row sm:flex-wrap sm:gap-x-8 short:mt-4">
             {hero.reassurance.map((item) => (
               <li key={item} className="flex items-center gap-2">
                 <Icon name="check" size={16} className="text-teal-on-dark" />

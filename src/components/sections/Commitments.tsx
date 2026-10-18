@@ -55,7 +55,8 @@ export function Commitments({ eyebrow = commitments.eyebrow, title = commitments
         {items[index].title}
       </Heading>
       <p className={cn("text-body", textClass)}>{items[index].text}</p>
-      <div className="mt-auto pt-2">{extra}</div>
+      {/* The small illustrations repeat the text; on phones they are left out to keep the cards short */}
+      <div className="mt-auto pt-2 max-sm:hidden">{extra}</div>
     </div>
   );
 

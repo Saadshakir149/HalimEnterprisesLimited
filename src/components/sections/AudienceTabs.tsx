@@ -102,7 +102,7 @@ export function AudienceTabs({ tabs, labels }: AudienceTabsProps) {
           className="rounded-lg border border-line bg-surface p-6 sm:p-10 lg:col-span-8"
         >
           <div className="flex flex-col gap-6">
-            <p className="max-w-[28ch] font-serif text-h2 text-navy">{tab.problem}</p>
+            <p className="max-w-[28ch] font-serif text-h3 text-navy sm:text-h2">{tab.problem}</p>
             <p className="max-w-measure text-body text-ink">{tab.intro}</p>
             <div className="flex flex-col gap-3 border-t border-line pt-6">
               <h3 className="font-sans text-caption font-semibold tracking-[0.14em] text-teal uppercase">{labels.helpTitle}</h3>
@@ -114,7 +114,8 @@ export function AudienceTabs({ tabs, labels }: AudienceTabsProps) {
                         {service.title}
                         <Icon name="arrow-right" size={16} className="text-teal transition-transform duration-150 group-hover/s:translate-x-1 group-focus-visible/s:translate-x-1" />
                       </span>
-                      <span className="text-small text-muted">{service.why}</span>
+                      {/* On phones the service names alone are enough; the descriptions are on the audience page */}
+                      <span className="text-small text-muted max-sm:hidden">{service.why}</span>
                     </Link>
                   </li>
                 ))}
