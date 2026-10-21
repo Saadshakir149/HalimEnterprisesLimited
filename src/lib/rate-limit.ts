@@ -1,10 +1,12 @@
 /*
  * A simple in-memory sliding-window rate limiter for the contact forms.
  *
- * It suits a single Node.js instance, which is how the site runs on Hostinger.
- * Counts live in this process's memory: they reset on restart and are not
- * shared between instances. If the site is ever scaled to several instances,
- * replace this with a shared store (e.g. Redis) behind the same interface.
+ * On Vercel the forms run as serverless functions: counts live in one warm
+ * function instance's memory, so they reset on cold starts and are not shared
+ * between instances. It still stops a burst of repeated posts from one
+ * visitor, and the honeypot and timing checks apply regardless. For a firm
+ * limit across instances, replace this with a shared store (e.g. Upstash
+ * Redis) behind the same interface (see docs/OPEN-ITEMS.md).
  */
 
 export type RateLimitResult = {
@@ -55,8 +57,9 @@ export class SlidingWindowRateLimiter {
 export const formRateLimiter = new SlidingWindowRateLimiter(5, 10 * 60 * 1000);
 
 /**
- * The visitor's IP. Hostinger's Node.js hosting sits behind a proxy, which
- * puts the original address first in X-Forwarded-For.
+ * The visitor's IP. On Vercel, X-Forwarded-For and X-Real-IP are set by
+ * Vercel's edge from the connecting client's address, so the first
+ * X-Forwarded-For value is the visitor.
  */
 export function clientIp(headers: Headers): string {
   const forwarded = headers.get("x-forwarded-for")?.split(",")[0]?.trim();

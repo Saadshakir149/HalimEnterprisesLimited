@@ -48,7 +48,7 @@ describe("SlidingWindowRateLimiter", () => {
 });
 
 describe("clientIp", () => {
-  it("uses the first address in X-Forwarded-For (the original client behind Hostinger's proxy)", () => {
+  it("uses the first address in X-Forwarded-For (the original client, as set by Vercel's edge)", () => {
     expect(clientIp(new Headers({ "x-forwarded-for": "203.0.113.7, 10.0.0.1" }))).toBe("203.0.113.7");
   });
 

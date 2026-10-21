@@ -7,16 +7,10 @@
  * Conventions
  * - A value that is unknown is a Placeholder string ("PLACEHOLDER_...").
  *   Use isPlaceholder() before rendering, and never show one to visitors.
- * - A value that is known but not yet signed off is wrapped in Provisional<T>.
  * - A value that is deliberately absent (not to be shown) is null.
  */
 
 export type Placeholder = `PLACEHOLDER_${string}`;
-
-export type Provisional<T> = {
-  readonly value: T;
-  readonly provisional: true;
-};
 
 export type EmailAddress = `${string}@${string}`;
 
@@ -62,10 +56,6 @@ export function isPlaceholder(value: unknown): value is Placeholder {
   return typeof value === "string" && value.startsWith("PLACEHOLDER_");
 }
 
-function provisional<T>(value: T): Provisional<T> {
-  return { value, provisional: true };
-}
-
 type Site = {
   /**
    * The public-facing name. Since 18 October 2026 this is the company's own
@@ -81,7 +71,8 @@ type Site = {
   readonly director: string;
   /** Not VAT registered: never show a VAT number */
   readonly vatRegistered: boolean;
-  readonly domain: Provisional<string>;
+  /** The live host name (the apex domain redirects here) */
+  readonly domain: string;
   readonly whatsapp: WhatsApp | Placeholder;
   readonly email: EmailAddress | Placeholder;
   /** Unconfirmed whether the WhatsApp number also takes calls; hidden while null */
@@ -161,10 +152,11 @@ export const site: Site = {
   incorporated: "2026-09-30",
   director: "Saad Haleem",
   vatRegistered: false,
-  // Provisional and not purchased. Chosen under the old trading name: the client to confirm the domain for the new name.
-  domain: provisional("halimaccountants.co.uk"),
+  // Confirmed 21 October 2026: live on Vercel; registered and DNS at Hostinger; halimenterpriseslimited.com redirects to www
+  domain: "www.halimenterpriseslimited.com",
   whatsapp: { display: "+44 7884 607135", waMe: "447884607135" },
-  email: "PLACEHOLDER_EMAIL",
+  // Confirmed 21 October 2026: the Hostinger mailbox on the domain (also the forms' SMTP account and MAIL_TO)
+  email: "info@halimenterpriseslimited.com",
   phone: null,
   // Not confirmed by the client (18 October 2026: removed from the site until it is)
   responseTime: null,
@@ -216,20 +208,14 @@ export function legalStatement(): string {
 }
 
 /**
- * The confirmed public address of the site, from NEXT_PUBLIC_SITE_URL (e.g.
- * "https://www.example.co.uk"). null until the production domain is set.
- * Canonical links, og:url, the sitemap, absolute URLs in structured data and
- * the address in emails are produced only from this, so the site never points
- * search engines at a provisional domain or localhost.
+ * The site's public address, used for every absolute URL: metadataBase and so
+ * canonical links and og:url, the sitemap, robots.txt, structured data, the
+ * address in emails and the forms' origin check. NEXT_PUBLIC_SITE_URL can
+ * override it (read at build time); otherwise it is the live production
+ * address, so even a local or preview build never points search engines at
+ * localhost or a *.vercel.app address.
  */
-export const canonicalSiteUrl: string | null = process.env.NEXT_PUBLIC_SITE_URL ? process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "") : null;
-
-/**
- * The site's own origin for internal checks (the form origin check and the
- * booking embed's parent domain): the confirmed URL, or the provisional
- * domain until one is set. Never used for anything shown to search engines.
- */
-export const siteUrl = canonicalSiteUrl ?? `https://${site.domain.value}`;
+export const siteUrl: string = (process.env.NEXT_PUBLIC_SITE_URL || `https://${site.domain}`).replace(/\/$/, "");
 
 /*
  * Switch an integration on only once its details above are filled in. An

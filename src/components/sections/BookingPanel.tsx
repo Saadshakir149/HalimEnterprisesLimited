@@ -2,25 +2,34 @@ import { CallbackForm } from "@/components/forms/CallbackForm";
 import { BookingEmbed } from "@/components/sections/BookingEmbed";
 import { Button } from "@/components/ui/Button";
 import { DevWarning } from "@/components/ui/DevWarning";
+import { EmailLine } from "@/components/ui/EmailLine";
 import { Heading } from "@/components/ui/Heading";
 import { Icon } from "@/components/ui/Icon";
 import { routes } from "@/content/navigation";
 import { consultationPage as copy } from "@/content/pages";
-import { features, site } from "@/content/site";
+import { features, isPlaceholder, site } from "@/content/site";
 import { getBooking, integrationIssues, type Booking } from "@/lib/integrations";
 import { fill } from "@/lib/template";
 import { whatsappHref } from "@/lib/whatsapp";
 
 const boxClass = "flex flex-col gap-6 rounded-md border border-navy bg-paper p-6 sm:p-8";
 
-function WhatsAppOption({ href, intro }: { href: string; intro: string }) {
+/** The written alternatives: WhatsApp (if configured) and the business email (if set). Renders nothing if neither is available. */
+function WriteOptions({ whatsapp }: { whatsapp: string | null }) {
+  const email = isPlaceholder(site.email) ? null : site.email;
+  if (!whatsapp && !email) return null;
   return (
     <div className="flex flex-col gap-3 border-t border-line pt-5">
-      <p className="text-small text-muted">{intro}</p>
-      <Button href={href} external variant="secondary" className="w-full">
-        <Icon name="message-circle" size={20} />
-        {copy.whatsappCta}
-      </Button>
+      {whatsapp && (
+        <>
+          <p className="text-small text-muted">{copy.whatsappIntro}</p>
+          <Button href={whatsapp} external variant="secondary" className="w-full">
+            <Icon name="message-circle" size={20} />
+            {copy.whatsappCta}
+          </Button>
+        </>
+      )}
+      <EmailLine prefix={copy.emailIntro} />
     </div>
   );
 }
@@ -68,6 +77,7 @@ function OnlineBooking({ booking, whatsapp }: { booking: Booking; whatsapp: stri
               </Button>
             )}
           </div>
+          <EmailLine prefix={copy.emailIntro} />
         </div>
       )}
     </aside>
@@ -104,7 +114,7 @@ export function BookingPanel() {
           {copy.contactLink}
         </Button>
       )}
-      {whatsapp && <WhatsAppOption href={whatsapp} intro={copy.whatsappIntro} />}
+      <WriteOptions whatsapp={whatsapp} />
     </aside>
   );
 }

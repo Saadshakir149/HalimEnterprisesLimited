@@ -26,6 +26,8 @@ type Alternative = {
   title: string;
   text: string;
   detail?: string;
+  /** Makes the detail itself a link (the email address as a mailto: link) */
+  detailHref?: string;
   action: { href: string; label: string; external?: boolean };
 };
 
@@ -44,7 +46,14 @@ function AlternativeCard({ option }: { option: Alternative }) {
           <Text size="small" muted>
             {option.text}
           </Text>
-          {option.detail && <p className="figures text-small font-semibold text-ink">{option.detail}</p>}
+          {option.detail &&
+            (option.detailHref ? (
+              <a href={option.detailHref} className="link-body w-fit text-small font-semibold break-all">
+                {option.detail}
+              </a>
+            ) : (
+              <p className="figures text-small font-semibold text-ink">{option.detail}</p>
+            ))}
         </div>
       </div>
       {option.action.external ? (
@@ -84,7 +93,16 @@ export default function ContactPage() {
         ]
       : []),
     ...(email
-      ? [{ icon: "mail" as const, title: copy.email.title, text: copy.email.text, detail: email, action: { href: `mailto:${email}`, label: copy.email.cta } }]
+      ? [
+          {
+            icon: "mail" as const,
+            title: copy.email.title,
+            text: copy.email.text,
+            detail: email,
+            detailHref: `mailto:${email}`,
+            action: { href: `mailto:${email}`, label: copy.email.cta },
+          },
+        ]
       : []),
   ];
 

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/Button";
+import { EmailLine } from "@/components/ui/EmailLine";
 import { Heading } from "@/components/ui/Heading";
 import { Icon } from "@/components/ui/Icon";
 import { routes } from "@/content/navigation";
@@ -53,6 +54,7 @@ export function QuoteBox({ topic, serviceSlug }: QuoteBoxProps) {
           </Button>
         )}
       </div>
+      <EmailLine prefix={quoteBox.email} className="border-t border-line pt-4 text-center" />
     </aside>
   );
 }

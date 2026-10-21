@@ -15,6 +15,7 @@ import {
   type NavLink,
 } from "@/content/navigation";
 import { isPlaceholder, legalStatement, site } from "@/content/site";
+import { cn } from "@/lib/utils";
 import { whatsappDisplay, whatsappHref } from "@/lib/whatsapp";
 
 const columns: { title: string; links: readonly NavLink[] }[] = [
@@ -36,11 +37,16 @@ function ContactBlock() {
   const waDisplay = whatsappDisplay();
   const email = isPlaceholder(site.email) ? null : site.email;
 
+  /*
+   * Missing values render nothing at all: no <li>, icon or label. The dev-only
+   * warnings sit outside the list (DevWarning renders nothing in production,
+   * so wrapping one in an <li> would leave an empty list item).
+   */
   return (
     <div className="flex flex-col gap-3">
       <h2 className={labelClass}>Contact</h2>
       <ul className="flex flex-col gap-1">
-        {waHref && waDisplay ? (
+        {waHref && waDisplay && (
           <li>
             <a href={waHref} target="_blank" rel="noopener noreferrer" className={linkClass}>
               <Icon name="message-circle" size={18} className="text-teal-on-dark" />
@@ -48,21 +54,13 @@ function ContactBlock() {
               <ExternalMark size={14} />
             </a>
           </li>
-        ) : (
-          <li>
-            <DevWarning>WhatsApp number missing</DevWarning>
-          </li>
         )}
-        {email ? (
+        {email && (
           <li>
-            <a href={`mailto:${email}`} className={linkClass}>
+            <a href={`mailto:${email}`} className={cn(linkClass, "break-all")}>
               <Icon name="mail" size={18} className="text-teal-on-dark" />
               {email}
             </a>
-          </li>
-        ) : (
-          <li>
-            <DevWarning>Email address missing</DevWarning>
           </li>
         )}
         <li className="flex items-start gap-2 py-1 text-small text-on-navy-muted">
@@ -70,6 +68,8 @@ function ContactBlock() {
           <span className="text-balance">Consultations by phone or video across the UK</span>
         </li>
       </ul>
+      {!(waHref && waDisplay) && <DevWarning>WhatsApp number missing</DevWarning>}
+      {!email && <DevWarning>Email address missing</DevWarning>}
     </div>
   );
 }

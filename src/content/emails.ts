@@ -7,7 +7,7 @@
  * companies must show on business correspondence.
  */
 
-import { canonicalSiteUrl, legalStatement, site } from "@/content/site";
+import { legalStatement, site, siteUrl } from "@/content/site";
 
 const brand = site.brandName;
 
@@ -34,8 +34,7 @@ export const emailCopy = {
     signOff: brand,
   },
   /** Shown at the foot of every email */
-  /* The website address is added once the production domain is confirmed */
-  footer: canonicalSiteUrl ? `${legalStatement()} ${canonicalSiteUrl}` : legalStatement(),
+  footer: `${legalStatement()} ${siteUrl}`,
   /** Labels for the fields, in the order they appear in the notification */
   labels: {
     name: "Name",

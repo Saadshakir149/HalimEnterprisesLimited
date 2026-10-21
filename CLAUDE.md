@@ -27,6 +27,8 @@ These are verified against the Companies House record and the client's answers. 
 | Director | Saad Haleem |
 | Brand spelling | **Halim** (never "Haleem" for the business) |
 | WhatsApp | +44 7884 607135 → `https://wa.me/447884607135` |
+| Website | **https://www.halimenterpriseslimited.com** (confirmed 21 October 2026). The apex `halimenterpriseslimited.com` 308-redirects to www |
+| Business email | **info@halimenterpriseslimited.com** (confirmed 21 October 2026): a Hostinger mailbox. Shown on the site and used to send and receive the contact forms |
 | VAT | Not VAT registered (do not show a VAT number) |
 | Chartered status | **No** |
 | Registered auditor | **No** |
@@ -39,8 +41,7 @@ These are verified against the Companies House record and the client's answers. 
 | Who writes copy | Developer drafts, client reviews and approves |
 | Client policies | Client says privacy, cookie, complaints and client care policies exist. Not yet received |
 
-**Provisional (use, but mark as `PROVISIONAL` in config):**
-- Domain: `halimaccountants.co.uk` (not yet purchased; chosen under the old trading name, so the client should confirm the domain for the new name). Canonical URLs, the sitemap and og:url use only `NEXT_PUBLIC_SITE_URL`, never this provisional value.
+**Provisional:**
 - Tone of voice: professional but friendly
 
 ## 3. Services and audiences
@@ -97,8 +98,10 @@ These appear in the footer on every page:
 - **lucide-react** icons
 - **React Hook Form + Zod**. Zod schemas are shared between client and server.
 - **Next.js Route Handlers** for form submissions
-- **Nodemailer over SMTP** using the Hostinger mailbox on the client's domain. Hide it behind `src/lib/email.ts` so another provider (e.g. Resend) can replace it.
-- **Hosting: Hostinger Business Web Hosting**, as a managed Node.js web app deployed from GitHub on Node 22. Vercel is not used: its free plan forbids commercial use.
+- **Nodemailer over SMTP** using the Hostinger mailbox info@halimenterpriseslimited.com (smtp.hostinger.com, port 465). Hide it behind `src/lib/email.ts` so another provider (e.g. Resend) can replace it. The From address is always the SMTP mailbox (SPF/DKIM alignment); visitors' addresses go only in Reply-To.
+- **Hosting: Vercel** (changed 21 October 2026, replacing Hostinger Node.js hosting), deployed from the GitHub repository's `main` branch. The project must be on a **Pro** plan: Vercel's Hobby plan forbids commercial use. Forms run as serverless functions.
+- **Domain, DNS and email: Hostinger.** The domain is registered at Hostinger and its DNS is managed there: `A @ → 216.198.79.1` and `CNAME www → Vercel`. Hostinger's email records (MX, SPF, DKIM, DMARC, autodiscover/autoconfig) must never be touched.
+- **Environment:** secrets and settings are Vercel environment variables (see `.env.example`). Every absolute URL comes from `NEXT_PUBLIC_SITE_URL` (fallback: the live www address). Indexing follows Vercel's `VERCEL_ENV`: production is indexed, preview deployments are not. Deployment steps: `docs/DEPLOYMENT.md`; launch steps: `docs/LAUNCH-CHECKLIST.md`.
 - No database, no CMS, no Redux, no auth, no separate Express server
 - Package manager: use whatever the repo already uses; default to **npm**
 
@@ -171,8 +174,9 @@ Personality: **calm, precise, approachable.** It should feel like a well-kept le
 
 | Item | Status |
 |---|---|
-| Public name and domain | Name decided: Halim Enterprises Limited (18 October 2026). Domain still provisional (halimaccountants.co.uk, not purchased): client to confirm |
-| Business email and enquiry recipient | Missing |
+| Public name and domain | Done: Halim Enterprises Limited (18 October 2026), live at https://www.halimenterpriseslimited.com (21 October 2026) |
+| Business email and enquiry recipient | Done: info@halimenterpriseslimited.com (21 October 2026). Mailbox must exist at Hostinger before deploying; real delivery to be tested (docs/LAUNCH-CHECKLIST.md) |
+| Hosting | Vercel (Pro plan required for commercial use); domain, DNS and email at Hostinger |
 | Is the WhatsApp number also the call number? | Unconfirmed |
 | Response-time promise (same day vs 24 h) | Unconfirmed. Since 18 October 2026, publish no reply time at all until the client confirms one (`site.responseTime` is null) |
 | Professional body / ACCA status | Unconfirmed: mention nothing |

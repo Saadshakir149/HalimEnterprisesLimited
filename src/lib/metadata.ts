@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { canonicalSiteUrl, site } from "@/content/site";
+import { site } from "@/content/site";
 
 type PageMetadataOptions = {
   /** The page topic, without the brand: the layout's title template adds " | Halim Enterprises Limited" */
@@ -18,23 +18,24 @@ export function fullTitle(title: string, absolute = false): string {
 }
 
 /**
- * Metadata for one page. The canonical link and og:url are added only once
- * the production domain is confirmed (canonicalSiteUrl): until then they are
- * left out rather than pointed at a provisional domain or localhost.
+ * Metadata for one page. The canonical link and og:url are relative paths;
+ * the layout's metadataBase (siteUrl) makes them absolute on the production
+ * address. A page-level noindex (draft legal pages, /send-documents) applies
+ * on every deployment; preview deployments are noindexed site-wide by the layout.
  */
 export function pageMetadata({ title, description, path, absoluteTitle = false, noindex = false }: PageMetadataOptions): Metadata {
   const shown = fullTitle(title, absoluteTitle);
   return {
     title: absoluteTitle ? { absolute: title } : title,
     description,
-    ...(canonicalSiteUrl && { alternates: { canonical: path } }),
+    alternates: { canonical: path },
     openGraph: {
       type: "website",
       locale: "en_GB",
       siteName: site.brandName,
       title: shown,
       description,
-      ...(canonicalSiteUrl && { url: path }),
+      url: path,
     },
     twitter: { card: "summary", title: shown, description },
     ...(noindex && { robots: { index: false, follow: true } }),

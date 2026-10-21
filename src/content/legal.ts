@@ -61,6 +61,13 @@ const portal = getDocumentPortal();
 const howToContact: Inline[] = email
   ? ["You can contact us by email at ", { href: `mailto:${email}`, label: email }, " or through our ", contactLink, "."]
   : ["You can contact us using the options on our ", contactLink, "."];
+/* Where data-protection requests and complaints go: the business mailbox, falling back to the contact page */
+const dataRequests: Inline[] = email
+  ? ["To make a request about your personal information, email us at ", { href: `mailto:${email}`, label: email }, ". You can also use the options on our ", contactLink, "."]
+  : howToContact;
+const complaintsTo: Inline[] = email
+  ? ["Please send your complaint by email to ", { href: `mailto:${email}`, label: email }, ". You can also use the options on our ", contactLink, "."]
+  : howToContact;
 
 const privacy: LegalDocument = {
   slug: "privacy-policy",
@@ -81,6 +88,7 @@ const privacy: LegalDocument = {
         p(`This website is run by ${company}. We are the data controller for the personal information described in this policy.`),
         p(registered),
         ...when(ico !== null, p(`We are registered with the Information Commissioner’s Office under registration number ${ico}.`)),
+        ...when(email !== null, p("You can contact us about this policy at ", { href: `mailto:${email}`, label: email ?? "" }, ".")),
       ],
     },
     {
@@ -163,7 +171,7 @@ const privacy: LegalDocument = {
           "object to, or ask us to restrict, how we use it",
           "ask for your information in a portable format",
         ),
-        p(...howToContact),
+        p(...dataRequests),
         p(
           "If you are unhappy with how we have handled your information, you can complain to the Information Commissioner’s Office at ",
           { href: "https://ico.org.uk", label: "ico.org.uk" },
@@ -263,7 +271,7 @@ const complaints: LegalDocument = {
       title: "How to raise a complaint",
       blocks: [
         p("Please tell us what went wrong and what you would like us to do about it. Include any dates, names or documents that will help us understand."),
-        p(...howToContact),
+        p(...complaintsTo),
       ],
     },
     {

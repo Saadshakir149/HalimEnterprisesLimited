@@ -122,7 +122,7 @@ describe("handleFormPost", () => {
     });
 
     it("returns 503 with a friendly message when SMTP is not configured", async () => {
-      const response = await handleFormPost(post(validCallback, { origin: "https://halimaccountants.co.uk" }), callbackOptions());
+      const response = await handleFormPost(post(validCallback, { origin: "https://www.halimenterpriseslimited.com" }), callbackOptions());
       const body = await response.json();
       expect(response.status).toBe(503);
       expect(body.error).toBe(serverMessages.unavailable);
@@ -130,7 +130,7 @@ describe("handleFormPost", () => {
 
     it("never logs the submission when sending fails", async () => {
       const errorLog = vi.spyOn(console, "error").mockImplementation(() => {});
-      await handleFormPost(post(validCallback, { origin: "https://halimaccountants.co.uk" }), callbackOptions());
+      await handleFormPost(post(validCallback, { origin: "https://www.halimenterpriseslimited.com" }), callbackOptions());
       const logged = JSON.stringify(errorLog.mock.calls);
       expect(logged).not.toContain("Jane");
       expect(logged).not.toContain("07700");
@@ -140,6 +140,16 @@ describe("handleFormPost", () => {
       vi.stubEnv("FORM_ALLOWED_ORIGINS", "https://temp.example.com");
       const response = await handleFormPost(post(validCallback, { origin: "https://temp.example.com" }), callbackOptions());
       expect(response.status).toBe(503); // passed the origin check; stopped only because SMTP isn't set
+    });
+
+    it("accepts a Vercel preview deployment's own URL, but only on that preview", async () => {
+      vi.stubEnv("VERCEL_URL", "halim-abc123.vercel.app");
+      vi.stubEnv("VERCEL_ENV", "preview");
+      const preview = await handleFormPost(post(validCallback, { origin: "https://halim-abc123.vercel.app" }), callbackOptions());
+      expect(preview.status).toBe(503);
+      vi.stubEnv("VERCEL_ENV", "production");
+      const production = await handleFormPost(post(validCallback, { origin: "https://halim-abc123.vercel.app" }), callbackOptions());
+      expect(production.status).toBe(403);
     });
   });
 });

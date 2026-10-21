@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Review } from "@/content/site";
 import { checkHttpsUrl, resolveBooking, resolveDocumentPortal, resolveGoogleProfile, resolveReviews } from "@/lib/integrations";
 
-const domain = "halimaccountants.co.uk";
+const domain = "www.halimenterpriseslimited.com";
 const calendly = "https://calendly.com/halim-test/free-consultation";
 
 describe("checkHttpsUrl", () => {

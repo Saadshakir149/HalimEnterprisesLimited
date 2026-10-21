@@ -45,13 +45,19 @@ type HandlerOptions<S extends z.ZodType<BotFields>> = {
 const isProduction = () => process.env.NODE_ENV === "production";
 
 /**
- * Origins allowed to post to the forms in production: the site URL, plus any
- * extra origins in FORM_ALLOWED_ORIGINS (comma-separated), for example a
- * Hostinger temporary domain before the real domain is connected.
+ * Origins allowed to post to the forms in production: the site URL
+ * (https://www.halimenterpriseslimited.com), the deployment's own Vercel URLs
+ * on preview deployments (VERCEL_URL and VERCEL_BRANCH_URL, set by Vercel, so
+ * forms can be tested on a preview), plus any extra origins in
+ * FORM_ALLOWED_ORIGINS (comma-separated).
  */
 function allowedOrigins(): string[] {
   const extra = (process.env.FORM_ALLOWED_ORIGINS ?? "").split(",").map((o) => o.trim()).filter(Boolean);
-  return [new URL(siteUrl).origin, ...extra.map((o) => new URL(o).origin)];
+  const vercel =
+    process.env.VERCEL_ENV === "preview"
+      ? [process.env.VERCEL_URL, process.env.VERCEL_BRANCH_URL].filter((host): host is string => Boolean(host)).map((host) => `https://${host}`)
+      : [];
+  return [new URL(siteUrl).origin, ...vercel, ...extra.map((o) => new URL(o).origin)];
 }
 
 function json(body: Record<string, unknown>, status: number, headers?: HeadersInit): Response {

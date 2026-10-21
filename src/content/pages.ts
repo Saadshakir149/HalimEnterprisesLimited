@@ -52,6 +52,8 @@ export const quoteBox = {
   consultation: consultationLabel,
   callback: "Request a callback",
   whatsapp: "Ask on WhatsApp",
+  /** Followed by the business email address as a mailto: link */
+  email: "Or email us at",
 };
 
 export const servicesIndex = {
@@ -178,6 +180,8 @@ export const consultationPage = {
   contactLink: "Go to the contact page",
   whatsappIntro: "Prefer to write? Send us a message instead.",
   whatsappCta: "Message us on WhatsApp",
+  /** Followed by the business email address as a mailto: link */
+  emailIntro: "Or email us at",
   /* When online booking is on. {provider} is e.g. "Calendly" */
   online: {
     title: "Choose a time",

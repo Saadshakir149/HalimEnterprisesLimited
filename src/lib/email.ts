@@ -1,8 +1,14 @@
 /*
  * Email delivery for the contact forms: Nodemailer over SMTP, using the
- * Hostinger mailbox on the client's domain (CLAUDE.md section 6). Everything
- * provider-specific is in this file, so another provider (e.g. Resend) can
- * replace it behind sendMail().
+ * Hostinger mailbox info@halimenterpriseslimited.com (CLAUDE.md section 6).
+ * Everything provider-specific is in this file, so another provider (e.g.
+ * Resend) can replace it behind sendMail().
+ *
+ * Runs in Vercel's serverless Node.js runtime: the transport is created on
+ * first use and reused while the function instance stays warm (no pooled
+ * connections are held open between requests), and every SMTP stage has a
+ * timeout well inside the function's time limit, so a slow server ends in the
+ * friendly "failed" message rather than a timed-out function.
  *
  * Server only: this module reads SMTP secrets and must never reach the browser.
  */
@@ -53,9 +59,25 @@ export function mailConfig(): MailConfig | null {
     secure: SMTP_SECURE ? SMTP_SECURE === "true" : port === 465,
     user: SMTP_USER,
     pass: SMTP_PASS,
-    from: MAIL_FROM,
+    from: alignedFrom(MAIL_FROM, SMTP_USER),
     to: MAIL_TO,
   };
+}
+
+/**
+ * The From header, always on the authenticated mailbox's own address, which
+ * SPF and DKIM alignment (and Hostinger's servers) require. MAIL_FROM supplies
+ * the display name; if its address differs from SMTP_USER, SMTP_USER's
+ * address is used instead. Visitors' addresses only ever go in Reply-To.
+ *   alignedFrom('Halim Enterprises <info@x.com>', 'info@x.com') → 'Halim Enterprises <info@x.com>'
+ *   alignedFrom('Someone <other@y.com>', 'info@x.com')          → 'Someone <info@x.com>'
+ */
+export function alignedFrom(mailFrom: string, smtpUser: string): string {
+  const match = mailFrom.match(/^\s*"?([^"<]*?)"?\s*<([^>]+)>\s*$/);
+  const name = match ? match[1].trim() : "";
+  const address = (match ? match[2] : mailFrom).trim();
+  if (address.toLowerCase() === smtpUser.toLowerCase()) return mailFrom.trim();
+  return name ? `${name.replace(/"/g, "")} <${smtpUser}>` : smtpUser;
 }
 
 /** The business inbox that receives notifications, if configured */
@@ -71,6 +93,10 @@ function getTransporter(config: MailConfig): Transporter {
     port: config.port,
     secure: config.secure,
     auth: { user: config.user, pass: config.pass },
+    // Two emails per submission must finish within the function's time limit
+    connectionTimeout: 8_000,
+    greetingTimeout: 8_000,
+    socketTimeout: 12_000,
   });
   return transporter;
 }

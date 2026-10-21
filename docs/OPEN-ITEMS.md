@@ -1,15 +1,16 @@
 # Open items
 
-Mirrors CLAUDE.md section 11; keep the two in step. Values marked `PLACEHOLDER_` or provisional in `src/content/site.ts` are never shown to visitors.
+Mirrors CLAUDE.md section 11; keep the two in step. Values marked `PLACEHOLDER_` in `src/content/site.ts` are never shown to visitors. `npm run check:launch` lists everything still outstanding; the dashboard steps for going live are in `docs/LAUNCH-CHECKLIST.md`.
 
 ## From CLAUDE.md section 11
 
 | Item | Status | In the code |
 |---|---|---|
-| Final trading name and domain | Provisional: Halim Accountants / halimaccountants.co.uk | `site.brandName`, `site.domain` (provisional) |
-| Business email and enquiry recipient | Missing | `PLACEHOLDER_EMAIL`, hidden |
+| Public name and domain | **Done.** Halim Enterprises Limited, live at https://www.halimenterpriseslimited.com (21 October 2026) | `site.brandName`, `site.domain`, `siteUrl` |
+| Business email and enquiry recipient | **Done.** info@halimenterpriseslimited.com (21 October 2026). Real delivery still to be tested on the live site | `site.email`; `SMTP_USER`/`MAIL_FROM`/`MAIL_TO` in Vercel |
+| Hosting | **Changed** to Vercel (Pro plan needed for commercial use); domain, DNS and email stay at Hostinger | `docs/DEPLOYMENT.md` |
 | Is the WhatsApp number also the call number? | Unconfirmed | `site.phone` is `null`; copy says "message us on WhatsApp", never "call" |
-| Response-time promise (same day vs 24 h) | Unconfirmed; drafts use "within one working day" | `site.responseTime` (provisional), not yet shown |
+| Response-time promise (same day vs 24 h) | Unconfirmed: none shown anywhere | `site.responseTime` is `null` |
 | Professional body / ACCA status | Unconfirmed: mention nothing | — |
 | AML supervisor and number | Unconfirmed: hidden | `PLACEHOLDER_AML`, hidden |
 | ICO registration number | Client registering before launch | `PLACEHOLDER_ICO`, hidden |
@@ -22,12 +23,22 @@ Mirrors CLAUDE.md section 11; keep the two in step. Values marked `PLACEHOLDER_`
 | Client's existing policies | Not received | Legal pages are stubs |
 | Budget and launch date | Missing | — |
 
+## Launch preparation (21 October 2026)
+
+- [x] Domain confirmed: www.halimenterpriseslimited.com (apex redirects to www). Hosting moved to Vercel; DNS and email stay at Hostinger.
+- [x] Business email confirmed: info@halimenterpriseslimited.com. Shown in the footer, on /contact (its own card), on /book-consultation, in the service-page quote box, in the privacy policy (for data-protection requests) and the complaints procedure, and in the homepage JSON-LD `contactPoint`.
+- [ ] **Create the mailbox before deploying** (otherwise mail to the address shown on the site bounces), then test with `npm run email:test` and on the live forms. Steps: `docs/LAUNCH-CHECKLIST.md`.
+- [ ] **Vercel Pro plan.** The Hobby plan forbids commercial use.
+- [ ] **ICO registration** (client): once the number arrives, set `site.icoNumber`; the footer line and privacy-policy sentence then appear.
+- [ ] **Domain-registration email** sent to saad.haleem02@gmail.com: the client must verify it, or the domain can be suspended.
+- [ ] **Google Search Console:** add a Domain property, verify with a DNS TXT record in Hostinger, submit the sitemap.
+
 ## Website revision (18 October 2026)
 
 Brand changed to Halim Enterprises Limited and all copy rewritten (details in `docs/CONTENT-SEO-AUDIT.md`). Questions for the client:
 
 - [ ] **Limited companies as an audience.** The brief's five audiences don't include limited companies, but annual/statutory accounts and company formation (both selected) serve them, and the payroll page addresses company directors. Should "Limited companies" become a sixth audience page, or stay covered within the services only?
-- [ ] **Domain for the new name.** `halimaccountants.co.uk` was chosen for the old trading name and hasn't been bought. Which domain should the site use? Once live, set `NEXT_PUBLIC_SITE_URL` and rebuild: that switches on canonical links, the sitemap, `og:url` and the website address in emails.
+- [x] **Domain for the new name.** Done: www.halimenterpriseslimited.com (21 October 2026). Every absolute URL now uses it.
 - [ ] **Reply-time commitment.** No response time is shown anywhere now. If the client wants one (for example "within one working day"), set `site.responseTime` and it reappears on the contact page, in form confirmations and in the acknowledgement email.
 - [ ] **"Clients deal directly with the director" / "one point of contact"** (homepage, about page). Confirm this is how the company will work.
 - [ ] **New headline:** "Bookkeeping, VAT and accounting for UK small businesses". Alternatives are in `src/content/home.ts`.
@@ -90,7 +101,7 @@ Found in the audit and not yet built. All are developer tasks (the Iteration 9 b
 - [ ] **No homepage Organization/AccountingService JSON-LD.**
 - [ ] **No `/favicon.ico`** (only `/icon.svg`). Some browsers and crawlers request it directly and get a 404.
 - [ ] **`/styleguide` is public in production** (noindexed, unlinked). Decide whether to remove it from production builds.
-- [ ] **Rate-limit key can be spoofed.** `clientIp()` trusts the first `X-Forwarded-For` value, which the visitor's browser can set, so one client can change it on every request and bypass the 5-per-10-minutes limit (the honeypot and timing checks still apply). Taking the last value instead depends on how many proxies Hostinger puts in front of the app; check the header shape on the Hostinger staging deploy, then fix.
+- [ ] **Rate-limit key on Vercel.** `clientIp()` uses the first `X-Forwarded-For` value. On Vercel that header is set by Vercel's edge from the connecting client, so it should not be spoofable; confirm on the live site (send two test enquiries and check both are counted against the same address) rather than assuming it.
 - [ ] **Real email delivery** is still untested (see the forms section below).
 - [ ] **Not tested:** real Safari (only Playwright's WebKit engine on Windows), real iOS or Android devices, and a screen reader.
 
@@ -129,12 +140,12 @@ All three integrations are built and tested with test values, and all are **swit
 
 ## Forms and email (iteration 7)
 
-- [ ] **Business mailbox and SMTP settings.** Create the mailbox in Hostinger, then set `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` and `MAIL_TO` (see `.env.example`). Until then the forms return a friendly 503 in production.
+- [ ] **Business mailbox and SMTP settings.** Mailbox: info@halimenterpriseslimited.com (Hostinger). Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` and `MAIL_TO` in Vercel (Production; values in `.env.example`), after testing them locally with `npm run email:test`. Until they are set the forms return a friendly 503 in production.
 - [ ] **Real email delivery is untested.** No mailbox exists yet. Once the variables are in `.env.local`, send a test enquiry and a test callback, and check both the notification and the acknowledgement arrive (and not in spam). Check SPF, DKIM and DMARC are set for the domain.
 - [ ] **Agree the email copy** in `src/content/emails.ts` and the form copy in `src/content/forms.ts` (both DRAFT).
 - [ ] **The 3-second bot threshold** (`MIN_FILL_TIME_MS`): anyone who sends a form within 3 seconds of it appearing gets a success message but nothing is sent. That is unlikely for the enquiry form, but a visitor using browser autofill on the short callback form could get close. Review once real traffic is seen.
-- [ ] **Rate limiting is in memory** (5 per 10 minutes per IP). It suits Hostinger's single Node instance, but resets on restart. It would need a shared store if the site is ever scaled out.
-- [ ] **Temporary domain.** If testing on a Hostinger temporary domain before DNS is connected, add it to `FORM_ALLOWED_ORIGINS`, or the Origin check will reject form posts.
+- [ ] **Rate limiting is in memory** (5 per 10 minutes per IP). On Vercel the forms are serverless functions, so counts live in one warm instance and reset on cold starts: it stops bursts but is not a firm limit. If spam becomes a problem, move it to a shared store (e.g. Upstash Redis via the Vercel Marketplace) behind the same interface. The honeypot and timing checks apply regardless.
+- [x] **Testing before the domain is live.** Vercel preview deployments are allowed to post to the forms automatically (their own `VERCEL_URL`); other test origins can go in `FORM_ALLOWED_ORIGINS`.
 - [ ] **Dev-only audit advisories (iteration 9).** `npm audit` reports 5 high advisories in ESLint tooling (`braces` via `eslint-config-next`). Nothing that runs on the server or in the browser is affected; `npm audit --omit=dev` reports 0. The suggested `--force` fix would downgrade `eslint-config-next` to v14, so it has not been applied.
 
 ## Supporting pages (iteration 6)

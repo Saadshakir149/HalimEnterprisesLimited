@@ -3,16 +3,15 @@ import { legalDocuments } from "@/content/legal";
 import { routes } from "@/content/navigation";
 import { confirmedAudiences } from "@/content/audiences";
 import { confirmedServices } from "@/content/services";
-import { canonicalSiteUrl, site } from "@/content/site";
+import { site, siteUrl } from "@/content/site";
 
 /*
  * Indexable pages only: confirmed services and audiences (never pending
  * ones), the main pages, and legal pages once approved. /send-documents and
- * /styleguide are noindexed and left out. A sitemap needs absolute URLs, so
- * it stays empty until the production domain is confirmed.
+ * /styleguide are noindexed and left out. URLs use the production address
+ * (siteUrl), whichever deployment serves the file.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  if (!canonicalSiteUrl) return [];
   const legal = Object.values(legalDocuments)
     .filter((doc) => !(doc.status === "draft" && site.legal.noindexDraftPages))
     .map((doc) => `/${doc.slug}`);
@@ -28,5 +27,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     routes.faqs,
     ...legal,
   ];
-  return paths.map((path) => ({ url: `${canonicalSiteUrl}${path === "/" ? "" : path}` }));
+  return paths.map((path) => ({ url: `${siteUrl}${path === "/" ? "" : path}` }));
 }
